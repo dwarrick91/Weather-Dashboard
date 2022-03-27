@@ -22,87 +22,94 @@ var weatherUrl =
   "http://api.openweathermap.org/data/2.5/weather?q=" +
   city +
   "&appid=" +
-  apiKey
+  apiKey;
 
 var searchList = document.querySelector("ul");
 var searchForm = document.querySelector("form");
-var cityNameEl = document.querySelector("#cityName")
-var currentTempEl =document.querySelector("#currentTemp")
-var currentWindEl =document.querySelector("#currentWind")
-var currentHumidityEl =document.querySelector("#currentHumidity")
-var currentUvIndexEl =document.querySelector("#currentUvIndex")
-var today = moment().format("MMM Do, YYYY")
-var dayEl =document.querySelectorAll(".day")
-var dayTempEl =document.querySelectorAll(".dayTemp")
-var dayTempElArray = Array.from(dayTempEl)
-var iconEl = document.querySelectorAll(".icon")
-var iconElArray = Array.from(iconEl)
+var cityNameEl = document.querySelector("#cityName");
+var currentTempEl = document.querySelector("#currentTemp");
+var currentWindEl = document.querySelector("#currentWind");
+var currentHumidityEl = document.querySelector("#currentHumidity");
+var currentUvIndexEl = document.querySelector("#currentUvIndex");
+var today = moment().format("MMM Do, YYYY");
+var dayEl = document.querySelectorAll(".day");
+var dayTempEl = document.querySelectorAll(".dayTemp");
+var dayTempElArray = Array.from(dayTempEl);
+var iconEl = document.querySelectorAll(".icon");
+var iconElArray = Array.from(iconEl);
+var windEl = document.querySelectorAll(".wind");
+var windElArray = Array.from(windEl);
+var uvIndexEl = document.querySelectorAll(".uvIndex");
+var uvIndexElArray = Array.from(uvIndexEl);
 console.log(iconEl);
 function getApi(event) {
-    event.preventDefault()
+  event.preventDefault();
   var city = document.querySelector("#city").value;
   console.log(city);
+  
   var weatherUrl =
     "http://api.openweathermap.org/data/2.5/weather?q=" +
     city +
     "&appid=" +
     apiKey;
+   
   fetch(weatherUrl)
     .then(function (response) {
       return response.json();
     })
     .then(function (data) {
-        console.log(data);
-        cityNameEl.textContent = `${data.name} (${today})`
-        var oneCallUrl = `https://api.openweathermap.org/data/2.5/onecall?lat=${data.coord.lat}&lon=${data.coord.lon}&exclude=hourly,minutely&appid=${apiKey}&units=imperial`
-        fetch(oneCallUrl)
+      console.log(data);
+      cityNameEl.textContent = `${data.name} (${today})`;
+      var oneCallUrl = `https://api.openweathermap.org/data/2.5/onecall?lat=${data.coord.lat}&lon=${data.coord.lon}&exclude=hourly,minutely&appid=${apiKey}&units=imperial`;
+      fetch(oneCallUrl)
         .then(function (response) {
-            return response.json();
+          return response.json();
         })
-        .then(function (data){
-            console.log(data);
-            // dataArray = Object.keys(data.daily[i].weather[i])
-            // console.log(dataArray);
-            currentTempEl.textContent = `temperture ${data.current.temp} \u00B0 F`
-            currentWindEl.textContent = `Wind Speed ${data.current.wind_speed} MPH`
-            currentHumidityEl.textContent = `Humidity ${data.current.humidity} %`
-            currentUvIndexEl.textContent = ` UV Index ${data.current.uvi}`
-           
-            // day1El.textContent = moment().add(1, "d").format("MMM Do, YYYY")
-            for (var i = 0; i < data.daily.length-3; i++) {
-                var day = data.daily[i]
-                console.log(day);
-                console.log(dayTempElArray);
-                dayTempElArray[i].textContent = `Temp: ${day.temp.day} \u00B0 F`
-                console.log(day.weather[0]);
-                console.log(dayTempElArray);
-                console.log(data.daily[i]);
-                console.log(day.weather[0].icon);
-                
-                iconElArray[i].src = `http://openweathermap.org/img/wn/${day.weather[0].icon}@2x.png`
-                console.log(iconElArray[i]);
-                // iconImg = document.createElement("img")
-                // iconImg.src = `http://openweathermap.org/img/wn/${day.weather[0].icon}@2x.png`
-                // console.log(iconImg);
-                // document.getElementsByClassName("icon").appendChild(iconImg)
-                // console.log(iconElArray);
-                // weatherIconArray = Object.keys(day.weather[0])
-                // console.log(weatherIconArray);
-                // iconElArray.textContent = `${day.temp.weather}`
-                // weatherIconArray = Array.from(day.weather)
-                // console.log(weatherIconArray);
-                // iconEl.textContent = 
-              }
-            //   iconElArray[i].textContent = ` ${day.weather.icon}`
-            
+        .then(function (data) {
+          console.log(data);
+          
+          // dataArray = Object.keys(data.daily[i].weather[i])
+          // console.log(dataArray);
+          
+          currentTempEl.textContent = `temperture ${data.current.temp} \u00B0 F`;
+          currentWindEl.textContent = `Wind Speed ${data.current.wind_speed} MPH`;
+          currentHumidityEl.textContent = `Humidity ${data.current.humidity} %`;
+          currentUvIndexEl.textContent = ` UV Index ${data.current.uvi}`;
+          if (currentUvIndexEl >= 8) {
+              currentUvIndexEl.setAttribute("style", "background-color: red")
+          } else if (currentUvIndexEl > 5 && currentUvIndexEl < 8) {
+              currentUvIndexEl.setAttribute("style", "background-color: orange")
+          } else if( currentUvIndexEl > 2 && currentUvIndexEl < 6) {
+              currentUvIndexEl.setAttribute("style", "background-color: yellow")
+          }else{
+              currentUvIndexEl.setAttribute("style", "background-color: green")
+          }
 
-        })
-        var searchedCity = document.createElement("button");
-                searchedCity.textContent = data.name;
-                searchList.appendChild(searchedCity);
-               
+          // day1El.textContent = moment().add(1, "d").format("MMM Do, YYYY")
+          for (var i = 0; i < data.daily.length - 3; i++) {
+            var day = data.daily[i];
+            console.log(day);
+            console.log(dayTempElArray);
+            dayTempElArray[i].textContent = `Temp: ${day.temp.day} \u00B0 F`;
+            console.log(day.weather[0]);
+            console.log(dayTempElArray);
+            console.log(data.daily[i]);
+            console.log(day.weather[0].icon);
+
+            iconElArray[i].src = `http://openweathermap.org/img/wn/${day.weather[0].icon}@2x.png`;
+            console.log(iconElArray[i]);
+            windElArray[i].textContent = `Wind Speed: ${day.wind_speed} MPH`;
+            console.log(windElArray);
+            uvIndexElArray[i].textContent = `UV Index: ${day.uvi}`;
+            
+          }
+        });
+        
+      var searchedCity = document.createElement("button");
+      searchedCity.textContent = data.name;
+      searchList.appendChild(searchedCity);
+      searchedCity.addEventListener("click", getApi);
       
     });
 }
 searchForm.addEventListener("submit", getApi);
-
