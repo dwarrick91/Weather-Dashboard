@@ -28,6 +28,13 @@ var searchList = document.querySelector("ul");
 var searchForm = document.querySelector("form");
 var cityNameEl = document.querySelector("#cityName")
 var currentTempEl =document.querySelector("#currentTemp")
+var currentWindEl =document.querySelector("#currentWind")
+var currentHumidityEl =document.querySelector("#currentHumidity")
+var currentUvIndexEl =document.querySelector("#currentUvIndex")
+var today = moment().format("MMM Do, YYYY")
+var dayEl =document.querySelectorAll(".day")
+var dayTempEl =document.querySelectorAll(".dayTemp")
+var dayTempElArray = Array.from(dayTempEl)
 
 function getApi(event) {
     event.preventDefault()
@@ -44,7 +51,7 @@ function getApi(event) {
     })
     .then(function (data) {
         console.log(data);
-        cityNameEl.textContent = data.name
+        cityNameEl.textContent = `${data.name} (${today})`
         var oneCallUrl = `https://api.openweathermap.org/data/2.5/onecall?lat=${data.coord.lat}&lon=${data.coord.lon}&exclude=hourly,minutely&appid=${apiKey}&units=imperial`
         fetch(oneCallUrl)
         .then(function (response) {
@@ -52,16 +59,25 @@ function getApi(event) {
         })
         .then(function (data){
             console.log(data);
-            currentTempEl.textContent = `temperture ${data.current.temp}`
-            for (var i = 0; i < data.daily.length; i++) {
+            currentTempEl.textContent = `temperture ${data.current.temp} \u00B0 F`
+            currentWindEl.textContent = `Wind Speed ${data.current.wind_speed} MPH`
+            currentHumidityEl.textContent = `Humidity ${data.current.humidity} %`
+            currentUvIndexEl.textContent = ` UV Index ${data.current.uvi}`
+           
+            // day1El.textContent = moment().add(1, "d").format("MMM Do, YYYY")
+            for (var i = 0; i < data.daily.length-2; i++) {
                 var day = data.daily[i]
                 console.log(day);
                 
+                dayTempElArray[i].textContent = `Temp: ${day.temp.day}`
+                console.log(dayTempElArray);
+              
               }
         })
-        var searchedCity = document.createElement("li");
+        var searchedCity = document.createElement("button");
                 searchedCity.textContent = data.name;
                 searchList.appendChild(searchedCity);
+               
       
     });
 }
