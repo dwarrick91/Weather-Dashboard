@@ -35,7 +35,9 @@ var today = moment().format("MMM Do, YYYY")
 var dayEl =document.querySelectorAll(".day")
 var dayTempEl =document.querySelectorAll(".dayTemp")
 var dayTempElArray = Array.from(dayTempEl)
-
+var iconEl = document.querySelectorAll(".icon")
+var iconElArray = Array.from(iconEl)
+console.log(iconEl);
 function getApi(event) {
     event.preventDefault()
   var city = document.querySelector("#city").value;
@@ -59,20 +61,41 @@ function getApi(event) {
         })
         .then(function (data){
             console.log(data);
+            // dataArray = Object.keys(data.daily[i].weather[i])
+            // console.log(dataArray);
             currentTempEl.textContent = `temperture ${data.current.temp} \u00B0 F`
             currentWindEl.textContent = `Wind Speed ${data.current.wind_speed} MPH`
             currentHumidityEl.textContent = `Humidity ${data.current.humidity} %`
             currentUvIndexEl.textContent = ` UV Index ${data.current.uvi}`
            
             // day1El.textContent = moment().add(1, "d").format("MMM Do, YYYY")
-            for (var i = 0; i < data.daily.length-2; i++) {
+            for (var i = 0; i < data.daily.length-3; i++) {
                 var day = data.daily[i]
                 console.log(day);
-                
-                dayTempElArray[i].textContent = `Temp: ${day.temp.day}`
                 console.log(dayTempElArray);
-              
+                dayTempElArray[i].textContent = `Temp: ${day.temp.day} \u00B0 F`
+                console.log(day.weather[0]);
+                console.log(dayTempElArray);
+                console.log(data.daily[i]);
+                console.log(day.weather[0].icon);
+                
+                iconElArray[i].src = `http://openweathermap.org/img/wn/${day.weather[0].icon}@2x.png`
+                console.log(iconElArray[i]);
+                // iconImg = document.createElement("img")
+                // iconImg.src = `http://openweathermap.org/img/wn/${day.weather[0].icon}@2x.png`
+                // console.log(iconImg);
+                // document.getElementsByClassName("icon").appendChild(iconImg)
+                // console.log(iconElArray);
+                // weatherIconArray = Object.keys(day.weather[0])
+                // console.log(weatherIconArray);
+                // iconElArray.textContent = `${day.temp.weather}`
+                // weatherIconArray = Array.from(day.weather)
+                // console.log(weatherIconArray);
+                // iconEl.textContent = 
               }
+            //   iconElArray[i].textContent = ` ${day.weather.icon}`
+            
+
         })
         var searchedCity = document.createElement("button");
                 searchedCity.textContent = data.name;
