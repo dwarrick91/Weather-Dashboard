@@ -3,3 +3,18 @@ header {
     background-color: blue;
     color: white
 }
+
+#submitBtn {
+    width: 50%;
+}
+#hiddenCard {
+    display: none;
+}
+
+#city {
+    width: 50%;
+}
+
+.dayTemp, .humidity, .wind {
+    width: 100%;
+}
