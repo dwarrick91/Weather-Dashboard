@@ -59,7 +59,12 @@ function getApi(event) {
   event.preventDefault();
   var city = document.querySelector("#city").value;
   console.log(city);
-
+  if (!city){
+    city = event.target.innerHTML;
+    console.log(city);
+  }
+  if(event.target.innerHTML)
+console.log(event.target);
   var weatherUrl =
     "http://api.openweathermap.org/data/2.5/weather?q=" +
     city +
@@ -88,6 +93,7 @@ function getApi(event) {
           currentWindEl.textContent = `Wind Speed ${data.current.wind_speed} MPH`;
           currentHumidityEl.textContent = `Humidity ${data.current.humidity} %`;
           currentUvIndexEl.textContent = ` UV Index ${data.current.uvi}`;
+          var currentIcon
           if (data.current.uvi >= 8) {
             currentUvIndexEl.setAttribute("style", "background-color: red");
           } else if (data.current.uvi > 5 && data.current.uvi < 8) {
@@ -130,13 +136,15 @@ function getApi(event) {
             renderLastSearched();
           }
         });
-
+        document.querySelector("#city").value = ""
       var searchedCity = document.createElement("button");
       searchedCity.textContent = data.name;
       searchedCity.setAttribute("style", "width: 50%")
-      searchedCity.classList.add("btn")
+      searchedCity.classList.add("btn","btn-sm", "btn-primary","btn-block")
       searchList.appendChild(searchedCity);
       searchedCity.addEventListener("click", getApi);
+      city.value = ""
+      
     });
 }
 searchForm.addEventListener("submit", getApi);
