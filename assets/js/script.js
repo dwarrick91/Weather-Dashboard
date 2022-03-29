@@ -127,25 +127,22 @@ function getApi(event) {
             windElArray[i].textContent = `Wind Speed: ${day.wind_speed} MPH`;
             console.log(windElArray);
             humidityElArray[i].textContent = `Humidity: ${day.humidity} %`;
-            renderLastSearched();
-            function renderLastSearched() {
-              lastSearchedCity = localStorage.getItem("City");
+            // renderLastSearched();
+            // function renderLastSearched() {
+            //   lastSearchedCity = localStorage.getItem("City");
 
-              city.textContent = lastSearchedCity;
-            }
-            searchForm.addEventListener("submit", getApi);
-            event.preventDefault;
+            //   city.textContent = lastSearchedCity;
+            // }
 
-            localStorage.setItem("City", city);
-            console.log(city);
-            renderLastSearched();
+            // localStorage.setItem("City", city);
+            // console.log(city);
+            // renderLastSearched();
           }
         });
       if (!cityArray.includes(city)) {
         console.log(cityArray);
-        
-      }else {
-        return
+      } else {
+        return;
       }
       cityArray.push(city);
       console.log(cityArray);
@@ -165,8 +162,17 @@ function getApi(event) {
       );
       searchList.appendChild(searchedCity);
       searchedCity.addEventListener("click", getApi);
+      
+      function renderLastSearched() {
+        localStorage.getItem("City");
+       city.textContent = "City".value
+      }
 
-      city.value = "";
+      localStorage.setItem("City", city);
+      console.log(city);
+
+     
+      renderLastSearched();
     });
 }
 searchForm.addEventListener("submit", getApi);
