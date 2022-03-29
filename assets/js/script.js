@@ -17,7 +17,7 @@
 // var apiKey = "f1624d9bbc11ce1b43689070c87ae1f";
 var apiKey = "75d035b78716373a15635dcf36329a5b";
 var city = document.querySelector("#city");
-
+var cityArray = [];
 var weatherUrl =
   "http://api.openweathermap.org/data/2.5/weather?q=" +
   city +
@@ -32,19 +32,12 @@ var currentWindEl = document.querySelector("#currentWind");
 var currentHumidityEl = document.querySelector("#currentHumidity");
 var currentUvIndexEl = document.querySelector("#currentUvIndex");
 
-var today = moment().format("MMM Do, YYYY");
+var today = moment().format("dddd MMM Do, YYYY");
 var day1El = document.querySelector("#day1");
-var day2El = document.querySelector("#day2")
-var day3El = document.querySelector("#day3")
-var day4El = document.querySelector("#day4")
-var day5El = document.querySelector("#day5")
-
-day1El.textContent = moment().add(1, "d").format("MMM Do, YYYY")
-day2El.textContent = moment().add(2, "d").format("MMM Do, YYYY")
-day3El.textContent = moment().add(3, "d").format("MMM Do, YYYY")
-day4El.textContent = moment().add(4, "d").format("MMM Do, YYYY")
-day5El.textContent = moment().add(5, "d").format("MMM Do, YYYY")
-
+var day2El = document.querySelector("#day2");
+var day3El = document.querySelector("#day3");
+var day4El = document.querySelector("#day4");
+var day5El = document.querySelector("#day5");
 
 var dayTempEl = document.querySelectorAll(".dayTemp");
 var dayTempElArray = Array.from(dayTempEl);
@@ -57,14 +50,22 @@ var humidityElArray = Array.from(humidityEl);
 console.log(iconEl);
 function getApi(event) {
   event.preventDefault();
-  var city = document.querySelector("#city").value;
+
+  var city = document.querySelector("#city").value.trim().toUpperCase();
+  // if(cityArray.includes(city)) {
+  //   console.log(cityArray);
+  //   return
+  // }
+  // cityArray.push(city)
+  // console.log(cityArray);
+
   console.log(city);
-  if (!city){
+  if (!city) {
     city = event.target.innerHTML;
     console.log(city);
   }
-  if(event.target.innerHTML)
-console.log(event.target);
+
+  console.log(event.target);
   var weatherUrl =
     "http://api.openweathermap.org/data/2.5/weather?q=" +
     city +
@@ -93,7 +94,12 @@ console.log(event.target);
           currentWindEl.textContent = `Wind Speed ${data.current.wind_speed} MPH`;
           currentHumidityEl.textContent = `Humidity ${data.current.humidity} %`;
           currentUvIndexEl.textContent = ` UV Index ${data.current.uvi}`;
-          var currentIcon
+
+          day1El.textContent = moment().add(1, "d").format("dddd MMM Do, YYYY");
+          day2El.textContent = moment().add(2, "d").format("dddd MMM Do, YYYY");
+          day3El.textContent = moment().add(3, "d").format("dddd MMM Do, YYYY");
+          day4El.textContent = moment().add(4, "d").format("dddd MMM Do, YYYY");
+          day5El.textContent = moment().add(5, "d").format("dddd MMM Do, YYYY");
           if (data.current.uvi >= 8) {
             currentUvIndexEl.setAttribute("style", "background-color: red");
           } else if (data.current.uvi > 5 && data.current.uvi < 8) {
@@ -104,7 +110,6 @@ console.log(event.target);
             currentUvIndexEl.setAttribute("style", "background-color: green");
           }
 
-          
           for (var i = 0; i < data.daily.length - 2; i++) {
             var day = data.daily[i];
             console.log(day);
@@ -126,25 +131,42 @@ console.log(event.target);
             function renderLastSearched() {
               lastSearchedCity = localStorage.getItem("City");
 
-              city.textContent = lastSearchedCity
+              city.textContent = lastSearchedCity;
             }
             searchForm.addEventListener("submit", getApi);
-            event.preventDefault
+            event.preventDefault;
 
             localStorage.setItem("City", city);
             console.log(city);
             renderLastSearched();
           }
         });
-        document.querySelector("#city").value = ""
+      if (!cityArray.includes(city)) {
+        console.log(cityArray);
+        
+      }else {
+        return
+      }
+      cityArray.push(city);
+      console.log(cityArray);
+      document.querySelector("#city").value = "";
+
       var searchedCity = document.createElement("button");
       searchedCity.textContent = data.name;
-      searchedCity.setAttribute("style", "width: 50%")
-      searchedCity.classList.add("btn","btn-sm", "btn-primary","btn-block")
+
+      searchedCity.setAttribute("style", "width: 50%");
+
+      searchedCity.classList.add(
+        "col",
+        "btn",
+        "btn-sm",
+        "btn-primary",
+        "btn-block"
+      );
       searchList.appendChild(searchedCity);
       searchedCity.addEventListener("click", getApi);
-      city.value = ""
-      
+
+      city.value = "";
     });
 }
 searchForm.addEventListener("submit", getApi);
