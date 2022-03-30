@@ -51,7 +51,7 @@ function getApi(event) {
 
   console.log(event.target);
   var weatherUrl =
-    "https://api.openweathermap.org/data/2.5/weather?q=" +
+    "http://api.openweathermap.org/data/2.5/weather?q=" +
     city +
     "&appid=" +
     apiKey;
@@ -63,7 +63,7 @@ function getApi(event) {
     .then(function (data) {
       console.log(data);
       cityNameEl.textContent = `${data.name} (${today})`;
-      var oneCallUrl = `https://api.openweathermap.org/data/2.5/onecall?lat=${data.coord.lat}&lon=${data.coord.lon}&exclude=hourly,minutely&appid=${apiKey}&units=imperial`;
+      var oneCallUrl = `http://api.openweathermap.org/data/2.5/onecall?lat=${data.coord.lat}&lon=${data.coord.lon}&exclude=hourly,minutely&appid=${apiKey}&units=imperial`;
       fetch(oneCallUrl)
         .then(function (response) {
           return response.json();
