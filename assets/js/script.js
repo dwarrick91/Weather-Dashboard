@@ -1,25 +1,9 @@
-// GIVEN a weather dashboard with form inputs
 
-// WHEN I search for a city
-// THEN I am presented with current and future conditions for that city and that city is added to the search history
-
-// WHEN I view current weather conditions for that city
-// THEN I am presented with the city name, the date, an icon representation of weather conditions, the temperature, the humidity, the wind speed, and the UV index
-
-// WHEN I view the UV index
-// THEN I am presented with a color that indicates whether the conditions are favorable, moderate, or severe
-
-// WHEN I view future weather conditions for that city
-// THEN I am presented with a 5-day forecast that displays the date, an icon representation of weather conditions, the temperature, the wind speed, and the humidity
-
-// WHEN I click on a city in the search history
-// THEN I am again presented with current and future conditions for that city
-// var apiKey = "f1624d9bbc11ce1b43689070c87ae1f";
 var apiKey = "75d035b78716373a15635dcf36329a5b";
 var city = document.querySelector("#city");
 var cityArray = [];
 var weatherUrl =
-  "http://api.openweathermap.org/data/2.5/weather?q=" +
+  "https://api.openweathermap.org/data/2.5/weather?q=" +
   city +
   "&appid=" +
   apiKey;
@@ -67,7 +51,7 @@ function getApi(event) {
 
   console.log(event.target);
   var weatherUrl =
-    "http://api.openweathermap.org/data/2.5/weather?q=" +
+    "https://api.openweathermap.org/data/2.5/weather?q=" +
     city +
     "&appid=" +
     apiKey;
@@ -164,14 +148,16 @@ function getApi(event) {
       searchedCity.addEventListener("click", getApi);
       
       function renderLastSearched() {
-        localStorage.getItem("City");
-       city.textContent = "City".value
+        lastSearchedCity = localStorage.getItem("City");
+
+        city.textContent = lastSearchedCity;
+        searchForm.addEventListener("submit", getApi);
       }
 
       localStorage.setItem("City", city);
       console.log(city);
 
-     
+      city.value = "";
       renderLastSearched();
     });
 }
