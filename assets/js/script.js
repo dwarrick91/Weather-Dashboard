@@ -16,13 +16,8 @@
 // THEN I am again presented with current and future conditions for that city
 // var apiKey = "f1624d9bbc11ce1b43689070c87ae1f";
 var apiKey = "75d035b78716373a15635dcf36329a5b";
-var city = document.querySelector("#city");
-var cityArray = [];
-var weatherUrl =
-  "https://api.openweathermap.org/data/2.5/weather?q=" +
-  city +
-  "&appid=" +
-  apiKey;
+var cityInputEl = document.querySelector("#city");
+var searchHistory = [];
 
 var searchList = document.querySelector("ul");
 var searchForm = document.querySelector("form");
@@ -47,28 +42,16 @@ var windEl = document.querySelectorAll(".wind");
 var windElArray = Array.from(windEl);
 var humidityEl = document.querySelectorAll(".humidity");
 var humidityElArray = Array.from(humidityEl);
-console.log(iconEl);
-function getApi(event) {
-  event.preventDefault();
 
-  var city = document.querySelector("#city").value.trim().toUpperCase();
-  // if(cityArray.includes(city)) {
-  //   console.log(cityArray);
-  //   return
-  // }
-  // cityArray.push(city)
-  // console.log(cityArray);
-
-  console.log(city);
-  if (!city) {
-    city = event.target.innerHTML;
-    console.log(city);
-  }
-
-  console.log(event.target);
+//when we click search button
+// then we get input value
+// then validate input
+// if no input then end function
+// make api request with input
+function getWeatherData(cityName) {
   var weatherUrl =
     "https://api.openweathermap.org/data/2.5/weather?q=" +
-    city +
+    cityName +
     "&appid=" +
     apiKey;
 
@@ -77,113 +60,130 @@ function getApi(event) {
       return response.json();
     })
     .then(function (data) {
-      console.log(data);
+      // update page to display cityName
       cityNameEl.textContent = `${data.name} (${today})`;
+
       var oneCallUrl = `https://api.openweathermap.org/data/2.5/onecall?lat=${data.coord.lat}&lon=${data.coord.lon}&exclude=hourly,minutely&appid=${apiKey}&units=imperial`;
+
       fetch(oneCallUrl)
         .then(function (response) {
           return response.json();
         })
         .then(function (data) {
-          console.log(data);
-
-          // dataArray = Object.keys(data.daily[i].weather[i])
-          // console.log(dataArray);
-
-          currentTempEl.textContent = `temperture ${data.current.temp} \u00B0 F`;
-          currentWindEl.textContent = `Wind Speed ${data.current.wind_speed} MPH`;
-          currentHumidityEl.textContent = `Humidity ${data.current.humidity} %`;
-          currentUvIndexEl.textContent = ` UV Index ${data.current.uvi}`;
-
-          day1El.textContent = moment().add(1, "d").format("dddd MMM Do, YYYY");
-          day2El.textContent = moment().add(2, "d").format("dddd MMM Do, YYYY");
-          day3El.textContent = moment().add(3, "d").format("dddd MMM Do, YYYY");
-          day4El.textContent = moment().add(4, "d").format("dddd MMM Do, YYYY");
-          day5El.textContent = moment().add(5, "d").format("dddd MMM Do, YYYY");
-          if (data.current.uvi >= 8) {
-            currentUvIndexEl.setAttribute("style", "background-color: red");
-          } else if (data.current.uvi > 5 && data.current.uvi < 8) {
-            currentUvIndexEl.setAttribute("style", "background-color: orange");
-          } else if (data.current.uvi > 2 && data.current.uvi < 6) {
-            currentUvIndexEl.setAttribute("style", "background-color: yellow");
-          } else {
-            currentUvIndexEl.setAttribute("style", "background-color: green");
-          }
-
-          for (var i = 0; i < data.daily.length - 2; i++) {
-            var day = data.daily[i];
-            console.log(day);
-            console.log(dayTempElArray);
-            dayTempElArray[i].textContent = `Temp: ${day.temp.day} \u00B0 F`;
-            console.log(day.weather[0]);
-            console.log(dayTempElArray);
-            console.log(data.daily[i]);
-            console.log(day.weather[0].icon);
-
-            iconElArray[
-              i
-            ].src = `http://openweathermap.org/img/wn/${day.weather[0].icon}@2x.png`;
-            console.log(iconElArray[i]);
-            windElArray[i].textContent = `Wind Speed: ${day.wind_speed} MPH`;
-            console.log(windElArray);
-            humidityElArray[i].textContent = `Humidity: ${day.humidity} %`;
-            // renderLastSearched();
-            // function renderLastSearched() {
-            //   lastSearchedCity = localStorage.getItem("City");
-
-            //   city.textContent = lastSearchedCity;
-            // }
-
-            // localStorage.setItem("City", city);
-            // console.log(city);
-            // renderLastSearched();
-          }
+          // passed data to display results funtion
+          displayResults(data);
         });
-      if (!cityArray.includes(city)) {
-        console.log(cityArray);
-      } else {
-        return;
-      }
-      cityArray.push(city);
-      console.log(cityArray);
-      document.querySelector("#city").value = "";
-
-      var searchedCity = document.createElement("button");
-      searchedCity.textContent = data.name;
-
-      searchedCity.setAttribute("style", "width: 50%");
-
-      searchedCity.classList.add(
-        "col",
-        "btn",
-        "btn-sm",
-        "btn-primary",
-        "btn-block"
-      );
-      searchList.appendChild(searchedCity);
-      searchedCity.addEventListener("click", getApi);
-      
-      function renderLastSearched() {
-        lastSearchedCity = localStorage.getItem("City");
-
-        city.textContent = lastSearchedCity;
-        searchForm.addEventListener("submit", getApi).click();
+      // If city name is already in history end function
+      if (!searchHistory.includes(cityName)) {
+        updateLocalStorage(cityName);
+        createHistoryBtn(cityName);
       }
 
-      localStorage.setItem("City", city);
-      console.log(city);
-
-      city.value = "";
-      renderLastSearched();
+     
     });
 }
-searchForm.addEventListener("submit", getApi);
+// display results to user
+function displayResults(data) {
+  currentTempEl.textContent = `temperture ${data.current.temp} \u00B0 F`;
+  currentWindEl.textContent = `Wind Speed ${data.current.wind_speed} MPH`;
+  currentHumidityEl.textContent = `Humidity ${data.current.humidity} %`;
+  currentUvIndexEl.textContent = ` UV Index ${data.current.uvi}`;
 
-// saveButton10.addEventListener("click", function (event) {
-//   event.preventDefault();
+  day1El.textContent = moment().add(1, "d").format("dddd MMM Do, YYYY");
+  day2El.textContent = moment().add(2, "d").format("dddd MMM Do, YYYY");
+  day3El.textContent = moment().add(3, "d").format("dddd MMM Do, YYYY");
+  day4El.textContent = moment().add(4, "d").format("dddd MMM Do, YYYY");
+  day5El.textContent = moment().add(5, "d").format("dddd MMM Do, YYYY");
+  if (data.current.uvi >= 8) {
+    currentUvIndexEl.setAttribute("style", "background-color: red");
+  } else if (data.current.uvi > 5 && data.current.uvi < 8) {
+    currentUvIndexEl.setAttribute("style", "background-color: orange");
+  } else if (data.current.uvi > 2 && data.current.uvi < 6) {
+    currentUvIndexEl.setAttribute("style", "background-color: yellow");
+  } else {
+    currentUvIndexEl.setAttribute("style", "background-color: green");
+  }
 
-//   var text10 = document.querySelector("#ten").value;
+  for (var i = 0; i < data.daily.length - 2; i++) {
+    var day = data.daily[i];
 
-//   localStorage.setItem("list10", text10);
-//   renderLastSearched();
-// });
+    dayTempElArray[i].textContent = `Temp: ${day.temp.day} \u00B0 F`;
+
+    iconElArray[
+      i
+    ].src = `http://openweathermap.org/img/wn/${day.weather[0].icon}@2x.png`;
+
+    windElArray[i].textContent = `Wind Speed: ${day.wind_speed} MPH`;
+
+    humidityElArray[i].textContent = `Humidity: ${day.humidity} %`;
+  }
+}
+// create history button
+function createHistoryBtn(cityName) {
+  // create btn element
+  var searchedCity = document.createElement("button");
+  // add text content to btn
+  searchedCity.textContent = cityName;
+  // add styling attributes
+  searchedCity.setAttribute("style", "width: 50%");
+  // add class names
+  searchedCity.classList.add(
+    "col",
+    "btn",
+    "btn-sm",
+    "btn-primary",
+    "btn-block"
+  );
+  // add data attribute to btn
+  searchedCity.setAttribute("data-cityName", cityName);
+  searchList.appendChild(searchedCity);
+  function handleBtnClick() {
+    getWeatherData(cityName);
+  }
+
+  searchedCity.addEventListener("click", handleBtnClick);
+}
+// update local storage
+function updateLocalStorage(cityName) {
+  //  get copy of current data structure
+  var copyAsText = localStorage.getItem("city");
+  // if data is found in localStorage, update searchHistory
+  if (copyAsText) {
+    searchHistory = JSON.parse(copyAsText);
+  }
+
+  // modify copy of data structure
+  searchHistory.push(cityName);
+  // overwrite data structure with modified copy
+
+  localStorage.setItem("city", JSON.stringify(searchHistory));
+}
+function initializeSearchHistory() {
+  //  get copy of current data structure
+  var copyAsText = localStorage.getItem("city");
+  // if data is found in localStorage, update searchHistory
+  if (copyAsText) {
+    searchHistory = JSON.parse(copyAsText);
+  }
+  for (let i = 0; i < searchHistory.length; i++) {
+    const cityName = searchHistory[i];
+    createHistoryBtn(cityName)
+  }
+}
+
+function handleFormSubmit(event) {
+  event.preventDefault();
+  // get value from input element
+  var city = cityInputEl.value.trim().toUpperCase();
+  // reset input element
+  cityInputEl.value = "";
+
+  // if no value return
+  if (!city) {
+    return;
+  }
+  // call function and pass in city name as argument
+  getWeatherData(city);
+}
+searchForm.addEventListener("submit", handleFormSubmit);
+initializeSearchHistory();
